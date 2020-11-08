@@ -13,7 +13,7 @@ async function main() {
   request.open('GET', 'https://8mfdub98va.execute-api.us-east-1.amazonaws.com/dev', true);
   request.onload = async function () {
 
-    // Begin accessing JSON data here
+    // Begin accessing JSON data     here
     var data = JSON.parse(this.response);
     if (request.status >= 200 && request.status < 400) {
       data.Items.forEach(async item => {
