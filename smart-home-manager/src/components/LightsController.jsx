@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import LightService from '../services/LightService'
 import 'bootstrap/dist/css/bootstrap.css';
-import {Container, Row, Col, Card, Table, Button, Spinner, Form} from 'react-bootstrap'
+import {Container, Row, Col, Card, Table, Button, Spinner, Form, FormLabel} from 'react-bootstrap'
 import Power from 'mdi-react/PowerPlugOutlineIcon'
 import Power_off from 'mdi-react/PowerPlugOffOutlineIcon'
 import Info_outline from 'mdi-react/InfoCircleOutlineIcon'
@@ -46,14 +46,23 @@ class LightsController extends Component{
                 "apiEndpoint": "",
                 "apiSecurity": ""
             }],
-            pendingChanges: {},
-            isPendingChanges: false
+            pendingChanges: {
+                LightName: "",
+                LightApiUrl: "",
+                LightSecurity: ""
+            },
+            isPendingChanges: false,
+            addNewLight: false,
+            NewLightType: "Hue"
         }
         this.refreshLights = this.refreshLights.bind(this)
         this.setLightId = this.setLightId.bind(this)
         this.turnLightOn = this.turnLightOn.bind(this)
         this.turnLightOff = this.turnLightOff.bind(this)
         this.pendingChange = this.pendingChange.bind(this)
+        this.openNewLight = this.openNewLight.bind(this)
+        this.closeNewLight = this.closeNewLight.bind(this)
+        this.updateNewLightFormParam = this.updateNewLightFormParam.bind(this)
     }
 
     componentDidMount() {
@@ -117,13 +126,13 @@ class LightsController extends Component{
         let changeValue = e.target.value;
         this.setState({isPendingChanges: true});
         if (changeId === 'LightName'){
-            this.setState({pendingChanges: {LightName: changeValue}});
+            this.setState({pendingChanges: {['LightName']: changeValue}});
         }
         else if (changeId === 'LightApiUrl'){
-            this.setState({pendingChanges: {LightApiUrl: changeValue}});
+            this.setState({pendingChanges: {['LightApiUrl']: changeValue}});
         }
         else if (changeId === 'LightSecurity'){
-            this.setState({pendingChanges: {LightSecurity: changeValue}});
+            this.setState({pendingChanges: {['LightSecurity']: changeValue}});
         }
     }
     makePendingChanges(){
@@ -131,7 +140,31 @@ class LightsController extends Component{
         let light_id = this.state.selectedLightId;
         console.log(light_id);
         console.log(changes);
+        LightService.updateLight(light_id,changes);
     }
+    openNewLight(){
+        this.setState({addNewLight: true})
+    }
+    closeNewLight(){
+        this.setState({addNewLight: false})
+    }
+    updateNewLightFormParam(event){
+        this.setState({[event.target.id]: event.target.value});
+    }
+    addNewLight(){
+        let new_light_name = this.state.NewLightName;
+        let new_light_type = this.state.NewLightType;
+        let new_light_api = this.state.NewLightApi;
+        let new_light_bearer = this.state.NewLightSecurity;
+        console.log(new_light_name);
+        console.log(new_light_type);
+        console.log(new_light_api);
+        console.log(new_light_bearer);
+        LightService.addNewLight(new_light_name,new_light_type,new_light_api,new_light_bearer).then(response =>{
+            this.refreshLights();
+        });;
+    }
+
 
     render() {
         return (
@@ -150,7 +183,7 @@ class LightsController extends Component{
                                         <th>Name</th>
                                         <th>Current State</th>
                                         <th></th>
-                                        <th><Button><Plus /></Button></th>
+                                        <th><Button onClick={()=>this.openNewLight()}><Plus /></Button></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -176,7 +209,7 @@ class LightsController extends Component{
                                 <Card.Title>
                                     <Row>
                                         <Col sm={11}>
-                                            Selected Light
+                                            Light Info
                                         </Col>
                                         <Col sm={1}>
                                             <Button onClick={()=> this.setLightId(null)}><Exit /></Button>
@@ -187,17 +220,17 @@ class LightsController extends Component{
                                         this.state.selectedLight.map(
                                             light =>
                                                 <Form>
-                                                    <Form.Group controlId="LightName">
+                                                    <Form.Group controlId="NewLightName">
                                                         <Form.Label>Light Name</Form.Label>
                                                         <Form.Control type="text" placeholder={light.name} onChange={this.pendingChange}></Form.Control>
                                                     </Form.Group>
-                                                    <Form.Group controlId="LightApiUrl">
+                                                    <Form.Group controlId="NewLightApiUrl">
                                                         <Form.Label>Light Api Endpoint</Form.Label>
-                                                        <Form.Control type="text" placeholder={light.apiEndpoint}></Form.Control>
+                                                        <Form.Control type="text" placeholder={light.apiEndpoint} onChange={this.pendingChange}></Form.Control>
                                                     </Form.Group>
-                                                    <Form.Group controlId="LightSecurity">
+                                                    <Form.Group controlId="NewLightSecurity">
                                                         <Form.Label>Light Api Security</Form.Label>
-                                                        <Form.Control type="text" placeholder={light.apiSecurity}></Form.Control>
+                                                        <Form.Control type="text" placeholder={light.apiSecurity} onChange={this.pendingChange}></Form.Control>
                                                     </Form.Group>
                                                     <Button disabled={!this.state.isPendingChanges} onClick={()=>this.makePendingChanges()}>
                                                         Update Light
@@ -207,6 +240,46 @@ class LightsController extends Component{
                                     }
                             </Card.Body>
                         </Card>}
+                        {this.state.addNewLight &&
+                            <Card>
+                                <Card.Title>
+                                    <Row>
+                                        <Col sm={11}>
+                                            Add New Light
+                                        </Col>
+                                        <Col sm={1}>
+                                            <Button onClick={()=>this.closeNewLight()}><Exit /></Button>
+                                        </Col>
+                                    </Row>
+                                </Card.Title>
+                                <Card.Body>
+                                    <Form>
+                                        <Form.Group controlId="NewLightName">
+                                            <Form.Label>New Light Name</Form.Label>
+                                            <Form.Control type="text" onChange={this.updateNewLightFormParam}></Form.Control>
+                                        </Form.Group>
+                                        <Form.Group controlId="NewLightType">
+                                            <Form.Label>New Light Type</Form.Label>
+                                            <Form.Control as="select" onChange={this.updateNewLightFormParam}>
+                                                <option>Hue</option>
+                                                <option>Fake</option>
+                                            </Form.Control>
+                                        </Form.Group>
+                                        <Form.Group controlId="NewLightApi">
+                                            <Form.Label>Api Endpoint</Form.Label>
+                                            <Form.Control type="text" onChange={this.updateNewLightFormParam}></Form.Control>
+                                        </Form.Group>
+                                        <Form.Group controlId="NewLightSecurity">
+                                            <Form.Label>Bearer Token</Form.Label>
+                                            <Form.Control type="text" onChange={this.updateNewLightFormParam}></Form.Control>
+                                        </Form.Group>
+                                        <Button onClick={()=>this.addNewLight()}>
+                                            Add New Light
+                                        </Button>
+                                    </Form>
+                                </Card.Body>
+                            </Card>
+                        }
                     </Col>
                 </Row>
             </Container>
