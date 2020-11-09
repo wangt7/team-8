@@ -22,9 +22,15 @@ class LightService{
         return turnOffResponse;
     }
     turnOnLight(light_id){
-        let turnOffLightRequest = SMART_HOME_MANAGER_LIGHT_API + '/state';
+        let turnOnLightRequest = SMART_HOME_MANAGER_LIGHT_API + '/state';
         let body = {'state': true, 'id':light_id, 'userId': 'TG001'};
-        let turnOnResponse = axios.post(`${turnOffLightRequest}`,body);
+        let turnOnResponse = axios.post(`${turnOnLightRequest}`,body);
+        return turnOnResponse;
+    }
+    updateLightColor(light_id,r,g,b){
+        let changeColorLightRequest = SMART_HOME_MANAGER_LIGHT_API + '/state';
+        let body = {'state': true, 'id':light_id, 'userId': 'TG001', 'color': {'red': r, 'green': g, 'blue': b}};
+        let turnOnResponse = axios.post(`${changeColorLightRequest}`,body);
         return turnOnResponse;
     }
     updateLight(light_id,pendingChanges){

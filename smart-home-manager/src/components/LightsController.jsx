@@ -8,6 +8,7 @@ import Info_outline from 'mdi-react/InfoCircleOutlineIcon'
 import info_filled from 'mdi-react/InfoCircleIcon'
 import Exit from 'mdi-react/CloseIcon'
 import Plus from 'mdi-react/PlusIcon'
+import { CompactPicker } from 'react-color';
 
 function TurnOff(props){
     return <td><Button style={{"border-color": "#C90E3A"}} className="mx-auto" variant="outline" onClick={props.onClick}><Power_off style={{"color": "#C90E3A"}} /></Button></td>;
@@ -72,6 +73,9 @@ class LightsController extends Component{
                 let tmpLight = {};
                 tmpLight['name'] = response.data['msg'][light]['name'];
                 tmpLight['id'] = light;
+                let color = response.data['msg'][light]['color'];
+                let tmpColor = {'r':color['red'], 'b':color['blue'], 'g':color['green']}
+                tmpLight['color'] = tmpColor;
                 if(response.data['msg'][light]['state']){
                     tmpLight['state'] = 'On';
                 }
@@ -161,6 +165,13 @@ class LightsController extends Component{
         console.log(new_light_bearer);
         LightService.addNewLight(new_light_name,new_light_type,new_light_api,new_light_bearer);
     }
+    handleColorUpdate(name,color){
+        console.log(name)
+        let rgb = color['rgb'];
+        console.log(color)
+        LightService.updateLightColor(name,rgb['r'],rgb['g'],rgb['b']);
+        this.refreshLights();
+    }
 
 
     render() {
@@ -180,6 +191,7 @@ class LightsController extends Component{
                                     <tr>
                                         <th><span style={{"font-family": "Poppins, sans-serif", "font-weight": "700"}}>Name</span></th>
                                         <th><span style={{"font-family": "Poppins, sans-serif", "font-weight": "700"}}>Current State</span></th>
+                                        <th><span style={{"font-family": "Poppins, sans-serif", "font-weight": "700"}}>Color</span></th>
                                         <th></th>
                                         <th><Button style={{"background-color": "#FFC759", "border-color": "#FFC759"}} onClick={()=>this.openNewLight()}><Plus /></Button></th>
                                     </tr>
@@ -191,6 +203,7 @@ class LightsController extends Component{
                                             <tr key = {light.id}>
                                                 <td><span style={{"font-family": "Poppins, sans-serif", "font-weight": "300"}}>{light.name}</span></td>
                                                 <td><span style={{"font-family": "Poppins, sans-serif", "font-weight": "300"}}>{light.state}</span></td>
+                                                <td><CompactPicker color={light.color} onChangeComplete={(color)=>this.handleColorUpdate(light.id,color)}/></td>
                                                 {light.state === "On" && <TurnOff onClick={() => this.turnLightOff(light.id)}></TurnOff>}
                                                 {light.state === "Off" && <TurnOn onClick={() => this.turnLightOn(light.id)}></TurnOn>}
                                                 <td><Button variant="link" onClick={() => this.setLightId(light.id)}><Info_outline style={{"color": "#331E38"}}/></Button></td>
