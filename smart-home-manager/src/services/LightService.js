@@ -28,7 +28,12 @@ class LightService{
         return turnOnResponse;
     }
     updateLight(light_id,pendingChanges){
-        
+        let updateLightRequest = SMART_HOME_MANAGER_LIGHT_API + '/update'
+        let updateLightBody = pendingChanges
+        updateLightBody['lightId'] = light_id;
+        updateLightBody['userId'] = 'TG001';
+        let updateLightResponse = axios.post(`${updateLightRequest}`,updateLightBody);
+        return updateLightResponse;
     }
     addNewLight(lightName,lightType,lightApi,lightBearer){
         let addNewLightRequest = SMART_HOME_MANAGER_LIGHT_API + '/add'

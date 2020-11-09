@@ -46,11 +46,6 @@ class LightsController extends Component{
                 "apiEndpoint": "",
                 "apiSecurity": ""
             }],
-            pendingChanges: {
-                LightName: "",
-                LightApiUrl: "",
-                LightSecurity: ""
-            },
             isPendingChanges: false,
             addNewLight: false,
             NewLightType: "Hue"
@@ -125,22 +120,26 @@ class LightsController extends Component{
         let changeId = e.target.id;
         let changeValue = e.target.value;
         this.setState({isPendingChanges: true});
-        if (changeId === 'LightName'){
-            this.setState({pendingChanges: {['LightName']: changeValue}});
-        }
-        else if (changeId === 'LightApiUrl'){
-            this.setState({pendingChanges: {['LightApiUrl']: changeValue}});
-        }
-        else if (changeId === 'LightSecurity'){
-            this.setState({pendingChanges: {['LightSecurity']: changeValue}});
-        }
+        this.setState({[e.target.id]: e.target.value});
     }
     makePendingChanges(){
-        let changes = this.state.pendingChanges;
+        let changes = {};
+        if (this.state.PendingLightName != undefined){
+            changes['name'] = this.state.PendingLightName
+        }
+        if (this.state.PendingLightApiUrl != undefined){
+            changes['baseAPI'] = this.state.PendingLightApiUrl
+        }
+        if (this.state.PendingLightSecurity != undefined){
+            changes['Bearer'] = this.state.PendingLightSecurity
+        }
         let light_id = this.state.selectedLightId;
         console.log(light_id);
         console.log(changes);
-        LightService.updateLight(light_id,changes);
+        LightService.updateLight(light_id,changes).then(response=>{
+            this.setLightId(null);
+            this.refreshLights();
+        });
     }
     openNewLight(){
         this.setState({addNewLight: true})
@@ -160,9 +159,7 @@ class LightsController extends Component{
         console.log(new_light_type);
         console.log(new_light_api);
         console.log(new_light_bearer);
-        LightService.addNewLight(new_light_name,new_light_type,new_light_api,new_light_bearer).then(response =>{
-            this.refreshLights();
-        });;
+        LightService.addNewLight(new_light_name,new_light_type,new_light_api,new_light_bearer);
     }
 
 
@@ -220,15 +217,15 @@ class LightsController extends Component{
                                         this.state.selectedLight.map(
                                             light =>
                                                 <Form>
-                                                    <Form.Group controlId="NewLightName">
+                                                    <Form.Group controlId="PendingLightName">
                                                         <Form.Label>Light Name</Form.Label>
                                                         <Form.Control type="text" placeholder={light.name} onChange={this.pendingChange}></Form.Control>
                                                     </Form.Group>
-                                                    <Form.Group controlId="NewLightApiUrl">
+                                                    <Form.Group controlId="PendingLightApiUrl">
                                                         <Form.Label>Light Api Endpoint</Form.Label>
                                                         <Form.Control type="text" placeholder={light.apiEndpoint} onChange={this.pendingChange}></Form.Control>
                                                     </Form.Group>
-                                                    <Form.Group controlId="NewLightSecurity">
+                                                    <Form.Group controlId="PendingLightSecurity">
                                                         <Form.Label>Light Api Security</Form.Label>
                                                         <Form.Control type="text" placeholder={light.apiSecurity} onChange={this.pendingChange}></Form.Control>
                                                     </Form.Group>
