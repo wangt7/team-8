@@ -59,6 +59,7 @@ class LightsController extends Component{
         this.openNewLight = this.openNewLight.bind(this)
         this.closeNewLight = this.closeNewLight.bind(this)
         this.updateNewLightFormParam = this.updateNewLightFormParam.bind(this)
+        this.handleColorUpdate = this.handleColorUpdate.bind(this)
     }
 
     componentDidMount() {
@@ -166,11 +167,11 @@ class LightsController extends Component{
         LightService.addNewLight(new_light_name,new_light_type,new_light_api,new_light_bearer);
     }
     handleColorUpdate(name,color){
-        console.log(name)
         let rgb = color['rgb'];
-        console.log(color)
-        LightService.updateLightColor(name,rgb['r'],rgb['g'],rgb['b']);
-        this.refreshLights();
+        this.setState({loading: true})
+        LightService.updateLightColor(name,rgb['r'],rgb['g'],rgb['b']).then(response => {
+            this.refreshLights();
+        });
     }
 
 
@@ -212,7 +213,10 @@ class LightsController extends Component{
                                     }
                                 </tbody>
                             </Table>}
-                            {this.state.loading && <Spinner animation="border"></Spinner>}
+                            {this.state.loading && 
+                            <Row className="justify-content-center">
+                                <Spinner className="m-3" style={{'width':'7vh','height':'7vh','color': '#058ED9'}} animation="border"></Spinner>
+                            </Row>}
                         </Card>
                         {this.state.selectedLightId != null && 
                         <Card className="my-3">
