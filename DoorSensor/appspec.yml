@@ -1,9 +1,8 @@
-# deployment file
 version: 0.0
 os: linux
 files:
-  - source: /app/   # deploy app code
-    destination: /home/app/doorSensor  # run in in doorSensor
+  - source: /app/
+    destination: /home/app/doorSensor
 permissions:
   - object: /
     pattern: "**"
