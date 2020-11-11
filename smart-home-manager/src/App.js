@@ -4,6 +4,7 @@ import './App.css';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
  
 import ListController from './components/LightsController';
+import DoorController from './components/DoorController';
  
 class App extends Component {
   render() {
@@ -12,6 +13,7 @@ class App extends Component {
         <div>
             <Switch>
               <Route path="/" component={ListController} exact/>
+              <Route path="/Doors" component={DoorController} exact/>
            </Switch>
         </div> 
       </BrowserRouter>

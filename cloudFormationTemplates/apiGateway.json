@@ -28,6 +28,10 @@
             "Properties":{
               "AuthorizationType": "NONE",
               "HttpMethod": "POST",
+              "Integration": {
+                  "Type": "AWS_PROXY",
+                  "IntegrationHttpMethod": "POST"
+              },
               "ResourceId": {
                   "Ref": "LightsResource"
               },
