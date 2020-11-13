@@ -68,7 +68,9 @@ class LightsController extends Component{
 
     refreshLights(){
         this.setState({loading: true});
+        console.log('loading');
         LightService.getAllLights().then(response =>{
+            console.log('here');
             let responseLights = [];
             console.log(response.data['msg']);
             for(let light in response.data['msg']){
