@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { Account, AccountContext } from './Accounts';
+import { useHistory } from "react-router-dom";
 
 
 function AuthLogin() {
@@ -9,11 +10,14 @@ function AuthLogin() {
 
     const { authenticate } = useContext(AccountContext);
 
+    const history = useHistory();
+
     const onSubmit = event => {
         event.preventDefault();
         authenticate(username, password)
             .then(data => {
                 console.log('Login Successful', data);
+                history.push("/devicecontroller/"+username);
             })
             .catch(err => {
                 console.log('Login Failed', err)
