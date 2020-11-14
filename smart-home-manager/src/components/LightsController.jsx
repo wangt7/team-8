@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import LightService from '../services/LightService'
 import 'bootstrap/dist/css/bootstrap.css';
-import {Container, Row, Col, Card, Table, Button, Spinner, Form, FormLabel} from 'react-bootstrap'
+import {Container, Row, Col, Card, Table, Button, Spinner, Form, FormLabel, Navbar, Nav} from 'react-bootstrap'
 import Power from 'mdi-react/PowerPlugOutlineIcon'
 import Power_off from 'mdi-react/PowerPlugOffOutlineIcon'
 import Info_outline from 'mdi-react/InfoCircleOutlineIcon'
@@ -13,9 +13,8 @@ import { useParams } from "react-router";
 
 function User(){
     const {username} = useParams();
-    return (<div> Username {username} </div>)
+    return username
 }
-
 function TurnOff(props){
     return <td><Button style={{"borderColor": "#C90E3A"}} className="mx-auto" variant="outline" onClick={props.onClick}><Power_off style={{"color": "#C90E3A"}} /></Button></td>;
 }
@@ -71,11 +70,11 @@ class LightsController extends Component{
     componentDidMount() {
         this.refreshLights();
     }
-
     refreshLights(){
         this.setState({loading: true});
         console.log('loading');
-        LightService.getAllLights().then(response =>{
+        let userId = this.props.match.params.username;
+        LightService.getAllLights(userId).then(response =>{
             console.log('here');
             let responseLights = [];
             console.log(response.data['msg']);

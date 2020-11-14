@@ -1,5 +1,5 @@
-
 import React, {Component} from 'react';
+import {Navbar, Nav} from 'react-bootstrap';
 import './App.css';
 import Signup from './components/Signup';
 import Login from './components/Login';
@@ -24,6 +24,13 @@ class App extends Component {
     return (      
        <BrowserRouter>
         <div>
+            <Navbar bg="dark" variant="dark">
+                <Navbar.Brand>Smart Home Manager</Navbar.Brand>
+                <Nav>
+                    <Nav.Link href={"/devicecontroller/TG001"}>Lights</Nav.Link>
+                    <Nav.Link href={"/Doors/TG001"}>Doors</Nav.Link>
+                </Nav>
+            </Navbar>
             <Switch>
               <Route path="/" exact component={Auth} exact />
               <Route path="/devicecontroller/:username" component={ListController} exact/>

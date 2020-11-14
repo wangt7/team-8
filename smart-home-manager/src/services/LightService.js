@@ -3,9 +3,9 @@ import axios from 'axios'
 const SMART_HOME_MANAGER_LIGHT_API = 'https://cors-anywhere.herokuapp.com/https://ymlsh3q6dj.execute-api.us-east-1.amazonaws.com/dev/lights'
 
 class LightService{
-    getAllLights(){
+    getAllLights(userId){
         let allLightsRequest = SMART_HOME_MANAGER_LIGHT_API;
-        let allLightBody = {'userId': 'TG001'};
+        let allLightBody = {'userId': userId};
         let allLightsResponse = axios.post(`${allLightsRequest}`,allLightBody);
         return allLightsResponse;
     }
