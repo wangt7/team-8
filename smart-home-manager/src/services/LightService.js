@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const SMART_HOME_MANAGER_LIGHT_API = 'https://cors-anywhere.herokuapp.com/https://ymlsh3q6dj.execute-api.us-east-1.amazonaws.com/test1Stage/lights'
+const SMART_HOME_MANAGER_LIGHT_API = 'https://cors-anywhere.herokuapp.com/https://ymlsh3q6dj.execute-api.us-east-1.amazonaws.com/dev/lights'
 
 class LightService{
     getAllLights(){
