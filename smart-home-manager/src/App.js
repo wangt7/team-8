@@ -13,21 +13,20 @@ function Auth() {
   return (
     <Account>
       <Status />
-      <Signup />
       <Login />
     </Account>
   );
 };
- 
+  
 class App extends Component {
   render() {
     return (      
        <BrowserRouter>
         <div>
             <Switch>
-              <Route path="/" exact component={Auth} exact />
-              <Route path="/devicecontroller/:username" component={ListController} exact/>
-              <Route path="/Doors/:username" component={DoorController} exact/>
+              <Route path="/" component={Auth} exact />
+              <Route path="/lights/:username" component={ListController} exact/>
+              <Route path="/doors/:username" component={DoorController} exact/>
            </Switch>
         </div> 
       </BrowserRouter>
