@@ -23,13 +23,13 @@ class App extends Component {
     return (      
        <BrowserRouter>
         <div>
-            <Navbar bg="dark" variant="dark">
+            {/* <Navbar bg="dark" variant="dark">
                 <Navbar.Brand>Smart Home Manager</Navbar.Brand>
                 <Nav>
                     <Nav.Link href={"/devicecontroller/TG001"}>Lights</Nav.Link>
                     <Nav.Link href={"/Doors/TG001"}>Doors</Nav.Link>
                 </Nav>
-            </Navbar>
+            </Navbar> */}
             <Switch>
               <Route path="/" component={Auth} exact />
               <Route path="/lights/:username" component={ListController} exact/>

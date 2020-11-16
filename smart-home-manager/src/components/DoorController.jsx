@@ -6,7 +6,7 @@ import DoorService from '../services/DoorService'
 import LightService from '../services/LightService';
 import DoorClosedI from 'mdi-react/DoorClosedIcon';
 import DoorOpenI from 'mdi-react/DoorOpenIcon';
-import NavBar from './NavBar';
+import NavBar from './NewNavBar';
 
 function DoorShut(){
     return <td ><DoorClosedI></DoorClosedI></td>
@@ -84,73 +84,75 @@ class DoorController extends Component {
 
     render() {
         return(
-        <Container>
+        <div>
             <NavBar />
-            <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,700;1,600&display=swap" rel="stylesheet"/>
-            <Row className="justify-content-md-center my-3">
-                <Col className="text-center" xs={6} md={6} >
-                    <h1 className="DoorControllerTitle">Door Controller</h1>
-                </Col>
-            </Row>
-            <Row className="my-3">
-                <Col>
-                    <Card className="my-3">
-                        {!!!this.state.loading && <Table hover>
-                            <thead>
-                                <tr>
-                                    <th><span className="DoorControllerLogRowTitle">DeviceName</span></th>
-                                    <th><span className="DoorControllerLogRowTitle">State</span></th>
-                                    <th><span className="DoorControllerLogRowTitle">View Log</span></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                  this.state.doors.map(
-                                      door => 
-                                          <tr key = {door.id}>
-                                              <td>{door.name}</td>
-                                              {!!!door.state && <DoorShut></DoorShut>}
-                                              {door.state && <DoorOpen></DoorOpen>}
-                                              <td><Form.Check type="checkbox" id={door.id} onChange={this.viewLogSelected}></Form.Check></td>  
-                                          </tr>
-                                  )  
-                                }
-                            </tbody>
-                        </Table>}
-                        {this.state.loading && 
-                            <Row className="justify-content-center">
-                                <Spinner className="m-3" style={{'width':'7vh','height':'7vh','color': '#058ED9'}} animation="border"></Spinner>
-                            </Row>}
-                    </Card>
-                </Col>
-            </Row>
-            <Row className="my-3">
-                <Col>
-                    <Card className="my-3">
-                        <Table hover>
-                            <thead>
-                                <tr>
-                                    <th><span className="DoorControllerLogRowTitle">Date/Time</span></th>
-                                    <th><span className="DoorControllerLogRowTitle">State</span></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                  this.state.log.map(
-                                      log => 
-                                          <tr>
-                                              <td>{log.dateTime}</td>
-                                              {!!!log.status && <DoorShut></DoorShut>}
-                                              {log.status && <DoorOpen></DoorOpen>} 
-                                          </tr>
-                                  )  
-                                }
-                            </tbody>
-                        </Table>
-                    </Card>
-                </Col>
-            </Row>
-        </Container>
+            <Container>
+                <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,700;1,600&display=swap" rel="stylesheet"/>
+                <Row className="justify-content-md-center my-3">
+                    <Col className="text-center" xs={6} md={6} >
+                        <h1 className="DoorControllerTitle">Door Controller</h1>
+                    </Col>
+                </Row>
+                <Row className="my-3">
+                    <Col>
+                        <Card className="my-3">
+                            {!!!this.state.loading && <Table hover>
+                                <thead>
+                                    <tr>
+                                        <th><span className="DoorControllerLogRowTitle">DeviceName</span></th>
+                                        <th><span className="DoorControllerLogRowTitle">State</span></th>
+                                        <th><span className="DoorControllerLogRowTitle">View Log</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                    this.state.doors.map(
+                                        door => 
+                                            <tr key = {door.id}>
+                                                <td>{door.name}</td>
+                                                {!!!door.state && <DoorShut></DoorShut>}
+                                                {door.state && <DoorOpen></DoorOpen>}
+                                                <td><Form.Check type="checkbox" id={door.id} onChange={this.viewLogSelected}></Form.Check></td>  
+                                            </tr>
+                                    )  
+                                    }
+                                </tbody>
+                            </Table>}
+                            {this.state.loading && 
+                                <Row className="justify-content-center">
+                                    <Spinner className="m-3" style={{'width':'7vh','height':'7vh','color': '#058ED9'}} animation="border"></Spinner>
+                                </Row>}
+                        </Card>
+                    </Col>
+                </Row>
+                <Row className="my-3">
+                    <Col>
+                        <Card className="my-3">
+                            <Table hover>
+                                <thead>
+                                    <tr>
+                                        <th><span className="DoorControllerLogRowTitle">Date/Time</span></th>
+                                        <th><span className="DoorControllerLogRowTitle">State</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                    this.state.log.map(
+                                        log => 
+                                            <tr>
+                                                <td>{log.dateTime}</td>
+                                                {!!!log.status && <DoorShut></DoorShut>}
+                                                {log.status && <DoorOpen></DoorOpen>} 
+                                            </tr>
+                                    )  
+                                    }
+                                </tbody>
+                            </Table>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
+        </div>
         )
     }
 }
