@@ -10,6 +10,7 @@ import Exit from 'mdi-react/CloseIcon'
 import Plus from 'mdi-react/PlusIcon'
 import { CompactPicker } from 'react-color';
 import { useParams } from "react-router";
+import NavBar from './NewNavBar';
 
 function User(){
     const {username} = useParams();
@@ -168,11 +169,10 @@ class LightsController extends Component{
         let new_light_type = this.state.NewLightType;
         let new_light_api = this.state.NewLightApi;
         let new_light_bearer = this.state.NewLightSecurity;
-        console.log(new_light_name);
-        console.log(new_light_type);
-        console.log(new_light_api);
-        console.log(new_light_bearer);
-        LightService.addNewLight(new_light_name,new_light_type,new_light_api,new_light_bearer);
+        let userId = this.props.match.params.username;
+        LightService.addNewLight(userId,new_light_name,new_light_type,new_light_api,new_light_bearer).then(response => {
+            this.refreshLights();
+        });
     }
     handleColorUpdate(name,color){
         let rgb = color['rgb'];
@@ -185,127 +185,130 @@ class LightsController extends Component{
 
     render() {
         return (
-            <Container>
-                <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,700;1,600&display=swap" rel="stylesheet"/>
-                <Row className="justify-content-md-center my-3">
-                    <Col className="text-center" xs={6} md={6} >
-                        <h1 style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "600"}}>Light Controller</h1>
-                    </Col>
-                </Row>
-                <Row className="my-3">
-                    <Col>
-                        <Card className="my-3">
-                            {!this.state.loading && <Table hover> 
-                                <thead>
-                                    <tr>
-                                        <th><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "700"}}>Name</span></th>
-                                        <th><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "700"}}>Current State</span></th>
-                                        <th><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "700"}}>Color</span></th>
-                                        <th></th>
-                                        <th><Button style={{"backgroundColor": "#FFC759", "borderColor": "#FFC759"}} onClick={()=>this.openNewLight()}><Plus /></Button></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {
-                                    this.state.lights.map(
-                                        light =>
-                                            <tr key = {light.id}>
-                                                <td><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}}>{light.name}</span></td>
-                                                <td><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}}>{light.state}</span></td>
-                                                <td><CompactPicker color={light.color} onChangeComplete={(color)=>this.handleColorUpdate(light.id,color)}/></td>
-                                                {light.state === "On" && <TurnOff onClick={() => this.turnLightOff(light.id)}></TurnOff>}
-                                                {light.state === "Off" && <TurnOn onClick={() => this.turnLightOn(light.id)}></TurnOn>}
-                                                <td><Button variant="link" onClick={() => this.setLightId(light.id)}><Info_outline style={{"color": "#331E38"}}/></Button></td>
-                                            </tr>
-                                    )
-                                    }
-                                </tbody>
-                            </Table>}
-                            {this.state.loading && 
-                            <Row className="justify-content-center">
-                                <Spinner className="m-3" style={{'width':'7vh','height':'7vh','color': '#058ED9'}} animation="border"></Spinner>
-                            </Row>}
-                        </Card>
-                        {this.state.selectedLightId != null && 
-                        <Card className="my-3">
-                                <Card.Title className="p-3">
-                                    <Row>
-                                        <Col sm={11}>
-                                            <h3 style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "600"}}>Light Info</h3>
-                                        </Col>
-                                        <Col sm={1}>
-                                            <Button style={{"borderColor": "#C90E3A", "backgroundColor": "#C90E3A"}} onClick={()=> this.setLightId(null)}><Exit /></Button>
-                                        </Col>
-                                    </Row>
-                                </Card.Title>
-                                <Card.Body>
-                                    {
-                                        this.state.selectedLight.map(
-                                            light =>
-                                                <Form>
-                                                    <Form.Group controlId="PendingLightName">
-                                                        <Form.Label><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "400"}}>Light Name</span></Form.Label>
-                                                        <Form.Control style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}} type="text" placeholder={light.name} onChange={this.pendingChange}></Form.Control>
-                                                    </Form.Group>
-                                                    <Form.Group controlId="PendingLightApiUrl">
-                                                        <Form.Label><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "400"}}>Light Api Endpoint</span></Form.Label>
-                                                        <Form.Control style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}} type="text" placeholder={light.apiEndpoint} onChange={this.pendingChange}></Form.Control>
-                                                    </Form.Group>
-                                                    <Form.Group controlId="PendingLightSecurity">
-                                                        <Form.Label><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "400"}}>Light Api Security</span></Form.Label>
-                                                        <Form.Control style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}} type="text" placeholder={light.apiSecurity} onChange={this.pendingChange}></Form.Control>
-                                                    </Form.Group>
-                                                    <Button style={{"backgroundColor": "#331E38","borderColor": "#331E38", "fontFamily": "Poppins, sans-serif", "fontWeight": "500"}} disabled={!this.state.isPendingChanges} onClick={()=>this.makePendingChanges()}>
-                                                        Update Light
-                                                    </Button>
-                                                </Form>
-                                        )
-                                    }
-                            </Card.Body>
-                        </Card>}
-                        {this.state.addNewLight &&
+            <div>
+                <NavBar />
+                <Container>
+                    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,700;1,600&display=swap" rel="stylesheet"/>
+                    <Row className="justify-content-md-center my-3">
+                        <Col className="text-center" xs={6} md={6} >
+                            <h1 style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "600"}}>Light Controller</h1>
+                        </Col>
+                    </Row>
+                    <Row className="my-3">
+                        <Col>
                             <Card className="my-3">
-                                <Card.Title className="p-3">
-                                    <Row>
-                                        <Col sm={11}>
-                                            <h3 style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "600"}}>Add New Light</h3>
-                                        </Col>
-                                        <Col sm={1}>
-                                            <Button style={{"borderColor": "#C90E3A", "backgroundColor": "#C90E3A"}} onClick={()=>this.closeNewLight()}><Exit /></Button>
-                                        </Col>
-                                    </Row>
-                                </Card.Title>
-                                <Card.Body>
-                                    <Form>
-                                        <Form.Group controlId="NewLightName">
-                                            <Form.Label><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "400"}}>New Light Name</span></Form.Label>
-                                            <Form.Control style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}} type="text" onChange={this.updateNewLightFormParam}></Form.Control>
-                                        </Form.Group>
-                                        <Form.Group controlId="NewLightType">
-                                            <Form.Label><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "400"}}>New Light Type</span></Form.Label>
-                                            <Form.Control style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}} as="select" onChange={this.updateNewLightFormParam}>
-                                                <option>Hue</option>
-                                                <option>Fake</option>
-                                            </Form.Control>
-                                        </Form.Group>
-                                        <Form.Group controlId="NewLightApi">
-                                            <Form.Label><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "400"}}>Api Endpoint</span></Form.Label>
-                                            <Form.Control style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}} type="text" onChange={this.updateNewLightFormParam}></Form.Control>
-                                        </Form.Group>
-                                        <Form.Group controlId="NewLightSecurity">
-                                            <Form.Label><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "400"}}>Bearer Token</span></Form.Label>
-                                            <Form.Control style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}} type="text" onChange={this.updateNewLightFormParam}></Form.Control>
-                                        </Form.Group>
-                                        <Button style={{"borderColor": "#FFC759", "backgroundColor": "#FFC759", "fontFamily": "Poppins, sans-serif", "fontWeight": "500"}} onClick={()=>this.addNewLight()}>
-                                            Add New Light
-                                        </Button>
-                                    </Form>
-                                </Card.Body>
+                                {!this.state.loading && <Table hover> 
+                                    <thead>
+                                        <tr>
+                                            <th><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "700"}}>Name</span></th>
+                                            <th><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "700"}}>Current State</span></th>
+                                            <th><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "700"}}>Color</span></th>
+                                            <th></th>
+                                            <th><Button style={{"backgroundColor": "#FFC759", "borderColor": "#FFC759"}} onClick={()=>this.openNewLight()}><Plus /></Button></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                        this.state.lights.map(
+                                            light =>
+                                                <tr key = {light.id}>
+                                                    <td><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}}>{light.name}</span></td>
+                                                    <td><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}}>{light.state}</span></td>
+                                                    <td><CompactPicker color={light.color} onChangeComplete={(color)=>this.handleColorUpdate(light.id,color)}/></td>
+                                                    {light.state === "On" && <TurnOff onClick={() => this.turnLightOff(light.id)}></TurnOff>}
+                                                    {light.state === "Off" && <TurnOn onClick={() => this.turnLightOn(light.id)}></TurnOn>}
+                                                    <td><Button variant="link" onClick={() => this.setLightId(light.id)}><Info_outline style={{"color": "#331E38"}}/></Button></td>
+                                                </tr>
+                                        )
+                                        }
+                                    </tbody>
+                                </Table>}
+                                {this.state.loading && 
+                                <Row className="justify-content-center">
+                                    <Spinner className="m-3" style={{'width':'7vh','height':'7vh','color': '#058ED9'}} animation="border"></Spinner>
+                                </Row>}
                             </Card>
-                        }
-                    </Col>
-                </Row>
-            </Container>
+                            {this.state.selectedLightId != null && 
+                            <Card className="my-3">
+                                    <Card.Title className="p-3">
+                                        <Row>
+                                            <Col sm={11}>
+                                                <h3 style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "600"}}>Light Info</h3>
+                                            </Col>
+                                            <Col sm={1}>
+                                                <Button style={{"borderColor": "#C90E3A", "backgroundColor": "#C90E3A"}} onClick={()=> this.setLightId(null)}><Exit /></Button>
+                                            </Col>
+                                        </Row>
+                                    </Card.Title>
+                                    <Card.Body>
+                                        {
+                                            this.state.selectedLight.map(
+                                                light =>
+                                                    <Form>
+                                                        <Form.Group controlId="PendingLightName">
+                                                            <Form.Label><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "400"}}>Light Name</span></Form.Label>
+                                                            <Form.Control style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}} type="text" placeholder={light.name} onChange={this.pendingChange}></Form.Control>
+                                                        </Form.Group>
+                                                        <Form.Group controlId="PendingLightApiUrl">
+                                                            <Form.Label><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "400"}}>Light Api Endpoint</span></Form.Label>
+                                                            <Form.Control style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}} type="text" placeholder={light.apiEndpoint} onChange={this.pendingChange}></Form.Control>
+                                                        </Form.Group>
+                                                        <Form.Group controlId="PendingLightSecurity">
+                                                            <Form.Label><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "400"}}>Light Api Security</span></Form.Label>
+                                                            <Form.Control style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}} type="text" placeholder={light.apiSecurity} onChange={this.pendingChange}></Form.Control>
+                                                        </Form.Group>
+                                                        <Button style={{"backgroundColor": "#331E38","borderColor": "#331E38", "fontFamily": "Poppins, sans-serif", "fontWeight": "500"}} disabled={!this.state.isPendingChanges} onClick={()=>this.makePendingChanges()}>
+                                                            Update Light
+                                                        </Button>
+                                                    </Form>
+                                            )
+                                        }
+                                </Card.Body>
+                            </Card>}
+                            {this.state.addNewLight &&
+                                <Card className="my-3">
+                                    <Card.Title className="p-3">
+                                        <Row>
+                                            <Col sm={11}>
+                                                <h3 style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "600"}}>Add New Light</h3>
+                                            </Col>
+                                            <Col sm={1}>
+                                                <Button style={{"borderColor": "#C90E3A", "backgroundColor": "#C90E3A"}} onClick={()=>this.closeNewLight()}><Exit /></Button>
+                                            </Col>
+                                        </Row>
+                                    </Card.Title>
+                                    <Card.Body>
+                                        <Form>
+                                            <Form.Group controlId="NewLightName">
+                                                <Form.Label><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "400"}}>New Light Name</span></Form.Label>
+                                                <Form.Control style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}} type="text" onChange={this.updateNewLightFormParam}></Form.Control>
+                                            </Form.Group>
+                                            <Form.Group controlId="NewLightType">
+                                                <Form.Label><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "400"}}>New Light Type</span></Form.Label>
+                                                <Form.Control style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}} as="select" onChange={this.updateNewLightFormParam}>
+                                                    <option>Hue</option>
+                                                    <option>Fake</option>
+                                                </Form.Control>
+                                            </Form.Group>
+                                            <Form.Group controlId="NewLightApi">
+                                                <Form.Label><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "400"}}>Api Endpoint</span></Form.Label>
+                                                <Form.Control style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}} type="text" onChange={this.updateNewLightFormParam}></Form.Control>
+                                            </Form.Group>
+                                            <Form.Group controlId="NewLightSecurity">
+                                                <Form.Label><span style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "400"}}>Bearer Token</span></Form.Label>
+                                                <Form.Control style={{"fontFamily": "Poppins, sans-serif", "fontWeight": "300"}} type="text" onChange={this.updateNewLightFormParam}></Form.Control>
+                                            </Form.Group>
+                                            <Button style={{"borderColor": "#FFC759", "backgroundColor": "#FFC759", "fontFamily": "Poppins, sans-serif", "fontWeight": "500"}} onClick={()=>this.addNewLight()}>
+                                                Add New Light
+                                            </Button>
+                                        </Form>
+                                    </Card.Body>
+                                </Card>
+                            }
+                        </Col>
+                    </Row>
+                </Container>
+            </div>
         )
     }
 }

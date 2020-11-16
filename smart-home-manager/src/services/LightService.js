@@ -9,41 +9,41 @@ class LightService{
         let allLightsResponse = axios.post(`${allLightsRequest}`,allLightBody);
         return allLightsResponse;
     }
-    getLightById(light_id){
+    getLightById(userId,light_id){
         let lightByIdRequest = SMART_HOME_MANAGER_LIGHT_API;
-        let lightByIdBody = {'userId': 'TG001', 'lightId': light_id};
+        let lightByIdBody = {'userId': userId, 'lightId': light_id};
         let lightByIdResponse = axios.post(`${lightByIdRequest}`, lightByIdBody);
         return lightByIdResponse;
     }
-    turnOffLight(light_id){
+    turnOffLight(userId,light_id){
         let turnOffLightRequest = SMART_HOME_MANAGER_LIGHT_API + '/state';
-        let body = {'state': false, 'id':light_id, 'userId': 'TG001'};
+        let body = {'state': false, 'id':light_id, 'userId': userId};
         let turnOffResponse = axios.post(`${turnOffLightRequest}`,body);
         return turnOffResponse;
     }
-    turnOnLight(light_id){
+    turnOnLight(userId,light_id){
         let turnOnLightRequest = SMART_HOME_MANAGER_LIGHT_API + '/state';
-        let body = {'state': true, 'id':light_id, 'userId': 'TG001'};
+        let body = {'state': true, 'id':light_id, 'userId': userId};
         let turnOnResponse = axios.post(`${turnOnLightRequest}`,body);
         return turnOnResponse;
     }
-    updateLightColor(light_id,r,g,b){
+    updateLightColor(userId, light_id,r,g,b){
         let changeColorLightRequest = SMART_HOME_MANAGER_LIGHT_API + '/state';
-        let body = {'state': true, 'id':light_id, 'userId': 'TG001', 'color': {'red': r, 'green': g, 'blue': b}};
+        let body = {'state': true, 'id':light_id, 'userId': userId, 'color': {'red': r, 'green': g, 'blue': b}};
         let turnOnResponse = axios.post(`${changeColorLightRequest}`,body);
         return turnOnResponse;
     }
-    updateLight(light_id,pendingChanges){
+    updateLight(userId, light_id,pendingChanges){
         let updateLightRequest = SMART_HOME_MANAGER_LIGHT_API + '/update'
         let updateLightBody = pendingChanges
         updateLightBody['lightId'] = light_id;
-        updateLightBody['userId'] = 'TG001';
+        updateLightBody['userId'] = userId;
         let updateLightResponse = axios.post(`${updateLightRequest}`,updateLightBody);
         return updateLightResponse;
     }
-    addNewLight(lightName,lightType,lightApi,lightBearer){
+    addNewLight(userId, lightName, lightType, lightApi,lightBearer){
         let addNewLightRequest = SMART_HOME_MANAGER_LIGHT_API + '/add'
-        let addNewLightBody = {'name':lightName,'light_type':lightType,'baseAPI':lightApi,'Bearer':lightBearer,'userId': 'TG001'};
+        let addNewLightBody = {'name':lightName,'light_type':lightType,'baseAPI':lightApi,'Bearer':lightBearer,'userId': userId};
         let addNewLightResponse = axios.post(`${addNewLightRequest}`,addNewLightBody);
         return addNewLightResponse
     }

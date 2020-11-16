@@ -13,28 +13,27 @@ function Auth() {
   return (
     <Account>
       <Status />
-      <Signup />
       <Login />
     </Account>
   );
 };
- 
+  
 class App extends Component {
   render() {
     return (      
        <BrowserRouter>
         <div>
-            <Navbar bg="dark" variant="dark">
+            {/* <Navbar bg="dark" variant="dark">
                 <Navbar.Brand>Smart Home Manager</Navbar.Brand>
                 <Nav>
                     <Nav.Link href={"/devicecontroller/TG001"}>Lights</Nav.Link>
                     <Nav.Link href={"/Doors/TG001"}>Doors</Nav.Link>
                 </Nav>
-            </Navbar>
+            </Navbar> */}
             <Switch>
-              <Route path="/" exact component={Auth} exact />
-              <Route path="/devicecontroller/:username" component={ListController} exact/>
-              <Route path="/Doors/:username" component={DoorController} exact/>
+              <Route path="/" component={Auth} exact />
+              <Route path="/lights/:username" component={ListController} exact/>
+              <Route path="/doors/:username" component={DoorController} exact/>
            </Switch>
         </div> 
       </BrowserRouter>
