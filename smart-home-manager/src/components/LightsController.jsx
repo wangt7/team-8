@@ -102,14 +102,16 @@ class LightsController extends Component{
     turnLightOn(id){
         console.log('Turning On Light Id: ' + id);
         this.setState({loading: true})
-        LightService.turnOnLight(id).then(response =>{
+        let userId = this.props.match.params.username;
+        LightService.turnOnLight(userId,id).then(response =>{
             this.refreshLights();
         });
     }
     turnLightOff(id){
         console.log('Turning Off Light Id: ' + id);
         this.setState({loading: true})
-        LightService.turnOffLight(id).then(response =>{
+        let userId = this.props.match.params.username;
+        LightService.turnOffLight(userId,id).then(response =>{
             this.refreshLights();
         });
     }
@@ -117,7 +119,8 @@ class LightsController extends Component{
         console.log('User Selected Light Id:' + id);
         this.setState({selectedLightId: id, isPendingChanges: false});
         if(id != null){
-            LightService.getLightById(id).then(response =>{
+            let userId = this.props.match.params.username;
+            LightService.getLightById(userId,id).then(response =>{
                 console.log(response);
                 let lightInfo = response.data['msg'];
                 let lname = lightInfo["name"];
@@ -150,7 +153,8 @@ class LightsController extends Component{
         let light_id = this.state.selectedLightId;
         console.log(light_id);
         console.log(changes);
-        LightService.updateLight(light_id,changes).then(response=>{
+        let userId = this.props.match.params.username;
+        LightService.updateLight(userId,light_id,changes).then(response=>{
             this.setLightId(null);
             this.refreshLights();
         });
@@ -176,8 +180,9 @@ class LightsController extends Component{
     }
     handleColorUpdate(name,color){
         let rgb = color['rgb'];
+        let userId = this.props.match.params.username;
         this.setState({loading: true})
-        LightService.updateLightColor(name,rgb['r'],rgb['g'],rgb['b']).then(response => {
+        LightService.updateLightColor(userId,name,rgb['r'],rgb['g'],rgb['b']).then(response => {
             this.refreshLights();
         });
     }
