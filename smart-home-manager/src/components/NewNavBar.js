@@ -6,7 +6,7 @@ import {Navbar, Nav} from 'react-bootstrap';
 function NavBar() {
     const {username} = useParams();
     return (
-        <Navbar style={{"backgroundColor": "#50C5B780"}}>
+        <Navbar bg="dark">
             <Navbar.Brand className="text-light">Smart Home Manager</Navbar.Brand>
             <Nav>
                 <NavLink className="mx-1" to={"/lights/"+username}>Lights</NavLink>

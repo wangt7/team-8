@@ -169,11 +169,10 @@ class LightsController extends Component{
         let new_light_type = this.state.NewLightType;
         let new_light_api = this.state.NewLightApi;
         let new_light_bearer = this.state.NewLightSecurity;
-        console.log(new_light_name);
-        console.log(new_light_type);
-        console.log(new_light_api);
-        console.log(new_light_bearer);
-        LightService.addNewLight(new_light_name,new_light_type,new_light_api,new_light_bearer);
+        let userId = this.props.match.params.username;
+        LightService.addNewLight(userId,new_light_name,new_light_type,new_light_api,new_light_bearer).then(response => {
+            this.refreshLights();
+        });
     }
     handleColorUpdate(name,color){
         let rgb = color['rgb'];
