@@ -33,8 +33,9 @@ class DoorController extends Component {
     }
 
     refreshDoors(){
-        // this.setState({loading: true});
-        DoorService.getAllDoors().then(response=>{
+        this.setState({loading: true});
+        let userId = this.props.match.params.username;
+        DoorService.getAllDoors(userId).then(response=>{
             console.log(response.data['msg'])
             let responseDoors = [];
             for(let door in response.data['msg']){
@@ -49,9 +50,12 @@ class DoorController extends Component {
     }
     refreshLog(doorId){
         console.log(doorId);
-        DoorService.getLog(doorId).then(response=>{
+        let userId = this.props.match.params.username;
+        DoorService.getLog(userId,doorId).then(response=>{
             let tmpLogs = [];
-            for(let logMsg of response.data['msg']){
+            let arr = response.data['msg']
+            let logMsgs = arr.slice(Math.max(arr.length - 5, 0))
+            for(let logMsg of logMsgs){
                 
                 console.log(logMsg);
                 let tmpLog = {};
