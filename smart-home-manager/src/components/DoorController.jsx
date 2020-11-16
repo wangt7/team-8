@@ -6,6 +6,7 @@ import DoorService from '../services/DoorService'
 import LightService from '../services/LightService';
 import DoorClosedI from 'mdi-react/DoorClosedIcon';
 import DoorOpenI from 'mdi-react/DoorOpenIcon';
+import NavBar from './NavBar';
 
 function DoorShut(){
     return <td ><DoorClosedI></DoorClosedI></td>
@@ -84,6 +85,7 @@ class DoorController extends Component {
     render() {
         return(
         <Container>
+            <NavBar />
             <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,700;1,600&display=swap" rel="stylesheet"/>
             <Row className="justify-content-md-center my-3">
                 <Col className="text-center" xs={6} md={6} >

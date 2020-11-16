@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AccountContext } from './Accounts';
+import { Button } from 'react-bootstrap'
 
 export default () => {
     const [status, setStatus] = useState(false);
@@ -25,8 +26,8 @@ export default () => {
             {status ? (
                 <div>
                     Logged in
-                    <button onClick={logout}>Logout</button>
-                    <button onClick={showToken}>showToken</button>
+                    <Button onClick={logout}>Logout</Button>
+                    {/* <button onClick={showToken}>showToken</button> */}
                 </div>
             ) : 'Not logged in' }
         </div>

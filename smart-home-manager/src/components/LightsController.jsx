@@ -10,6 +10,7 @@ import Exit from 'mdi-react/CloseIcon'
 import Plus from 'mdi-react/PlusIcon'
 import { CompactPicker } from 'react-color';
 import { useParams } from "react-router";
+import NavBar from './NavBar';
 
 function User(){
     const {username} = useParams();
@@ -186,6 +187,7 @@ class LightsController extends Component{
     render() {
         return (
             <Container>
+                <NavBar />
                 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,700;1,600&display=swap" rel="stylesheet"/>
                 <Row className="justify-content-md-center my-3">
                     <Col className="text-center" xs={6} md={6} >
