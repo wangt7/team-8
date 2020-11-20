@@ -77,6 +77,7 @@ class LightsController extends Component{
         let userId = this.props.match.params.username;
         LightService.getAllLights(userId).then(response =>{
             console.log('here');
+            console.log(response);
             let responseLights = [];
             console.log(response.data['msg']);
             for(let light in response.data['msg']){
@@ -175,6 +176,7 @@ class LightsController extends Component{
         let new_light_bearer = this.state.NewLightSecurity;
         let userId = this.props.match.params.username;
         LightService.addNewLight(userId,new_light_name,new_light_type,new_light_api,new_light_bearer).then(response => {
+            console.log(response);
             this.refreshLights();
         });
     }

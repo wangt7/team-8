@@ -1,0 +1,298 @@
+Description: >
+  The Cloud Formation template that sets up the Smart Home Manager Light Controller API & lambda functions
+
+Parameters:
+  S3Bucket:
+    Description: The S3 bucket that contains all the lambda function zips
+    Type: String
+    MinLength: 1
+    MaxLength: 255
+  lightInfoControllerLambda:
+    Description: The file in the specified S3 bucket which references the Smart Home Manager Light Info Controller
+    Type: String
+    MinLength: 1
+    MaxLength: 255
+  lightStateControllerLambda:
+    Description: The file in the specified S3 bucket which references the Smart Home Manager Light State Controller
+    Type: String
+    MinLength: 1
+    MaxLength: 255
+  lightAddControllerLambda:
+    Description: The file in the specified S3 bucket which references the Smart Home Manager Light Add Controller
+    Type: String
+    MinLength: 1
+    MaxLength: 255
+  lightUpdateControllerLambda:
+    Description: The file in the specified S3 bucket which references the Smart Home Manager Light Update Controller
+    Type: String
+    MinLength: 1
+    MaxLength: 255
+
+Resources:
+
+  SmartHomeManagerRESTAPI:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: SmartHomeManagerAPI
+      Description: This is the smart home manager API, which provides an interface for interacting with users devices
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+
+  LightsResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt SmartHomeManagerRESTAPI.RootResourceId
+      PathPart: 'lights'
+      RestApiId: !Ref SmartHomeManagerRESTAPI
+  LightStateResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref LightsResource
+      PathPart: 'state'
+      RestApiId: !Ref SmartHomeManagerRESTAPI
+  LightAddResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref LightsResource
+      PathPart: 'add'
+      RestApiId: !Ref SmartHomeManagerRESTAPI
+  LightUpdateResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref LightsResource
+      PathPart: 'update'
+      RestApiId: !Ref SmartHomeManagerRESTAPI
+
+  LightsPostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        ConnectionType: INTERNET
+        Credentials: !GetAtt GatewayLightsIamRole.Arn
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SmartHomeManagerLightInfoController.Arn}/invocations'
+      OperationName: 'lambda'
+      ResourceId: !Ref LightsResource
+      RestApiId: !Ref SmartHomeManagerRESTAPI
+  LightStatePostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        ConnectionType: INTERNET
+        Credentials: !GetAtt GatewayLightStateIamRole.Arn
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SmartHomeManagerLightStateController.Arn}/invocations'
+      OperationName: 'lambda'
+      ResourceId: !Ref LightStateResource
+      RestApiId: !Ref SmartHomeManagerRESTAPI
+  LightAddPostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        ConnectionType: INTERNET
+        Credentials: !GetAtt GatewayLightAddIamRole.Arn
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SmartHomeManagerLightAddController.Arn}/invocations'
+      OperationName: 'lambda'
+      ResourceId: !Ref LightAddResource
+      RestApiId: !Ref SmartHomeManagerRESTAPI
+  LightUpdatePostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        ConnectionType: INTERNET
+        Credentials: !GetAtt GatewayLightUpdateIamRole.Arn
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SmartHomeManagerLightUpdateController.Arn}/invocations'
+      OperationName: 'lambda'
+      ResourceId: !Ref LightUpdateResource
+      RestApiId: !Ref SmartHomeManagerRESTAPI
+
+  GatewayLightsIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Sid: ''
+            Effect: 'Allow'
+            Principal:
+              Service:
+                - 'apigateway.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Path: '/'
+      Policies:
+        - PolicyName: LambdaAccess
+          PolicyDocument:
+            Statement:
+              - Effect: 'Allow'
+                Action: 'lambda:*'
+                Resource: !GetAtt SmartHomeManagerLightInfoController.Arn
+  GatewayLightStateIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Sid: ''
+            Effect: 'Allow'
+            Principal:
+              Service:
+                - 'apigateway.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Path: '/'
+      Policies:
+        - PolicyName: LambdaAccess
+          PolicyDocument:
+            Statement:
+              - Effect: 'Allow'
+                Action: 'lambda:*'
+                Resource: !GetAtt SmartHomeManagerLightStateController.Arn
+  GatewayLightAddIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Sid: ''
+            Effect: 'Allow'
+            Principal:
+              Service:
+                - 'apigateway.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Path: '/'
+      Policies:
+        - PolicyName: LambdaAccess
+          PolicyDocument:
+            Statement:
+              - Effect: 'Allow'
+                Action: 'lambda:*'
+                Resource: !GetAtt SmartHomeManagerLightAddController.Arn
+  GatewayLightUpdateIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Sid: ''
+            Effect: 'Allow'
+            Principal:
+              Service:
+                - 'apigateway.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Path: '/'
+      Policies:
+        - PolicyName: LambdaAccess
+          PolicyDocument:
+            Statement:
+              - Effect: 'Allow'
+                Action: 'lambda:*'
+                Resource: !GetAtt SmartHomeManagerLightUpdateController.Arn
+                
+  LambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - lambda.amazonaws.com
+          Action:
+            - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: LambdaFunctionPolicy
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              - dynamodb:*
+            Resource: '*'
+
+  SmartHomeManagerLightInfoController:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: TestLightInfoController
+      Runtime: python3.8
+      Timeout: 5
+      Handler: smartHomeManagerLightInfoController.lambda_handler
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Code:
+        S3Bucket: !Ref S3Bucket
+        S3Key: !Ref lightInfoControllerLambda
+  SmartHomeManagerLightStateController:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: TestLightStateController
+      Runtime: python3.8
+      Timeout: 5
+      Handler: smartHomeManagerLightStateController.lambda_handler
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Code:
+        S3Bucket: !Ref S3Bucket
+        S3Key: !Ref lightStateControllerLambda
+  SmartHomeManagerLightAddController:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: TestLightAddController
+      Runtime: python3.8
+      Timeout: 5
+      Handler: smartHomeManagerLightAddController.lambda_handler
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Code:
+        S3Bucket: !Ref S3Bucket
+        S3Key: !Ref lightAddControllerLambda
+  SmartHomeManagerLightUpdateController:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: TestLightUpdateController
+      Runtime: python3.8
+      Timeout: 5
+      Handler: smartHomeManagerLightUpdateController.lambda_handler
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Code:
+        S3Bucket: !Ref S3Bucket
+        S3Key: !Ref lightUpdateControllerLambda
+
+  SmartHomeManagerDynamoDB:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: "SmartHomeManagerUserDevices"
+      AttributeDefinitions: 
+        - AttributeName: "userId"
+          AttributeType: "S"
+      KeySchema: 
+        - AttributeName: "userId"
+          KeyType: "HASH"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "2"
+        WriteCapacityUnits: "2"
