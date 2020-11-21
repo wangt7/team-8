@@ -1,7 +1,7 @@
 {
     "AWSTemplateFormatVersion" : "2010-09-09",
   
-    "Description" : "AWS CloudFormation Sample Template WordPress_Single_Instance: WordPress is web software you can use to create a beautiful website or blog. This template installs WordPress with a local MySQL database for storage. It demonstrates using the AWS CloudFormation bootstrap scripts to deploy WordPress. **WARNING** This template creates an Amazon EC2 instance. You will be billed for the AWS resources used if you create a stack from this template.",
+    "Description" : "Smart Home Manager CloudFormation Templates for the ec2, security group and user pool",
   
     "Parameters" : {
   
@@ -191,104 +191,36 @@
           ]
         }
       },
-      "myDynamoDBTable" : {
-        "Type" : "AWS::DynamoDB::Table",
+      "SmartHomeCognitoUserPool" : {
+        "Type" : "AWS::Cognito::UserPool",
         "Properties" : {
-          "AttributeDefinitions" : [
-            {
-              "AttributeName" : "DeviceType",
-              "AttributeType" : "S"   
+            "UsernameConfiguration" : {
+              "CaseSensitive" : "true" 
             },
-            {
-              "AttributeName" : "DeviceName",
-              "AttributeType" : "S"
-            },
-            {
-              "AttributeName" : "DeviceId",
-              "AttributeType" : "N"
-            },
-            {
-              "AttributeName" : "DeviceNum",
-              "AttributeType" : "N"
+            "UserPoolName" : "Smart-Home-Manager-UserPool"
+          }
+      },
+      "SmartHomeCognitoUserPoolDomain" : {
+        "Type" : "AWS::Cognito::UserPoolDomain",
+        "Properties" : {
+            "Domain" : "smart-home-manager",
+            "UserPoolId":{
+              "Ref":"SmartHomeCognitoUserPool"
             }
-          ],
-          "KeySchema" : [
-            {
-              "AttributeName" : "DeviceType",
-              "KeyType" : "HASH"
-            },
-            {
-              "AttributeName" : "DeviceName",
-              "KeyType" : "RANGE"
-            }
-          ],
-          "ProvisionedThroughput" : {
-            "ReadCapacityUnits" : "5",
-            "WriteCapacityUnits" : "5"
-          },
-          "TableName" : "myTableName",
-          "GlobalSecondaryIndexes" : [{
-            "IndexName" : "myIndex",
-            "KeySchema" : [
-              {
-                "AttributeName" : "DeviceId",
-                "KeyType" : "HASH"
-              },
-              {
-                "AttributeName" : "DeviceName",
-                "KeyType" : "RANGE"
-              }
-            ],                         
-            "Projection" : {
-              "NonKeyAttributes" : ["DeviceType","DeviceNum"],
-              "ProjectionType" : "INCLUDE"
-            },
-            "ProvisionedThroughput" : {
-              "ReadCapacityUnits" : "5",
-              "WriteCapacityUnits" : "5"
-            }
-          },
-          {
-            "IndexName" : "myIndex2",
-            "KeySchema" : [
-              {
-                "AttributeName" : "DeviceNum",
-                "KeyType" : "HASH"
-              },
-              {
-                "AttributeName" : "DeviceId",
-                "KeyType" : "RANGE"
-              }
-            ],                         
-            "Projection" : {
-              "NonKeyAttributes" : ["DeviceType","DeviceName"],
-              "ProjectionType" : "INCLUDE"
-            },
-            "ProvisionedThroughput" : {
-              "ReadCapacityUnits" : "5",
-              "WriteCapacityUnits" : "5"
-            }
-          }],
-          "LocalSecondaryIndexes" :[{
-            "IndexName" : "myLSI",
-            "KeySchema" : [
-              {
-                "AttributeName" : "DeviceType",
-                "KeyType" : "HASH"
-              },
-              {
-                "AttributeName" : "DeviceId",
-                "KeyType" : "RANGE"
-              }
-            ],                           
-            "Projection" : {
-              "NonKeyAttributes" : ["DeviceName","DeviceNum"],
-              "ProjectionType" : "INCLUDE"
-            }
-          }]
         }
       },
-      "WebServer": {
+      "SmartHomeCognitoUserPoolClient" : {
+        "Type" : "AWS::Cognito::UserPoolClient",
+        "Properties" : {
+            "ClientName" : "SmartHomeReact",
+            "GenerateSecret" : "false",
+            "RefreshTokenValidity" : 30,
+            "UserPoolId":{
+              "Ref":"SmartHomeCognitoUserPool"
+            }
+          }
+      },
+      "SmartHomeWebServer": {
         "Type" : "AWS::EC2::Instance",
         "Metadata" : {
           "AWS::CloudFormation::Init" : {
@@ -357,11 +289,6 @@
                          "         --resource WebServer ",
                          "         --region ", { "Ref" : "AWS::Region" }, "\n"
           ]]}}
-        },
-        "CreationPolicy" : {
-          "ResourceSignal" : {
-            "Timeout" : "PT15M"
-          }
         }
       }
     }
