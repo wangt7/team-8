@@ -197,13 +197,13 @@
             "UsernameConfiguration" : {
               "CaseSensitive" : "true" 
             },
-            "UserPoolName" : "Smart-Home-Manager-UserPool"
+            "UserPoolName" : "Smart-Home-Manager-UserPools"
           }
       },
       "SmartHomeCognitoUserPoolDomain" : {
         "Type" : "AWS::Cognito::UserPoolDomain",
         "Properties" : {
-            "Domain" : "smart-home-manager",
+            "Domain" : "smart-home-managers",
             "UserPoolId":{
               "Ref":"SmartHomeCognitoUserPool"
             }
@@ -265,7 +265,7 @@
           }
         },
         "Properties": {
-          "ImageId" : "ami-0aeee9496637a0213",
+          "ImageId" : "ami-0a9426facbea7a37a",
           "InstanceType"   : { "Ref" : "InstanceType" },
           "SecurityGroups" : [ {"Ref" : "WebServerSecurityGroup"} ],
           "KeyName"        : { "Ref" : "KeyName" },
