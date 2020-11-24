@@ -27,6 +27,11 @@ Parameters:
     Type: String
     MinLength: 1
     MaxLength: 255
+  DoorInfoControllerLambda:
+    Description: The file in the specified S3 bucket which references the Smart Home Manager Door info Controller
+    Type: String
+    MinLength: 1
+    MaxLength: 255
 
 Resources:
 
@@ -63,6 +68,13 @@ Resources:
       ParentId: !Ref LightsResource
       PathPart: 'update'
       RestApiId: !Ref SmartHomeManagerRESTAPI
+  DoorsResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt SmartHomeManagerRESTAPI.RootResourceId
+      PathPart: 'doors'
+      RestApiId: !Ref SmartHomeManagerRESTAPI
+
 
   LightsPostMethod:
     Type: AWS::ApiGateway::Method
@@ -131,6 +143,23 @@ Resources:
         Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SmartHomeManagerLightUpdateController.Arn}/invocations'
       OperationName: 'lambda'
       ResourceId: !Ref LightUpdateResource
+      RestApiId: !Ref SmartHomeManagerRESTAPI
+  DoorsPostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        ConnectionType: INTERNET
+        Credentials: !GetAtt GatewayLightUpdateIamRole.Arn
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SmartHomeManagerDoorInfoController.Arn}/invocations'
+      OperationName: 'lambda'
+      ResourceId: !Ref DoorsResource
       RestApiId: !Ref SmartHomeManagerRESTAPI
 
   GatewayLightsIamRole:
@@ -213,6 +242,26 @@ Resources:
               - Effect: 'Allow'
                 Action: 'lambda:*'
                 Resource: !GetAtt SmartHomeManagerLightUpdateController.Arn
+  GatewayDoorsIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Sid: ''
+            Effect: 'Allow'
+            Principal:
+              Service:
+                - 'apigateway.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Path: '/'
+      Policies:
+        - PolicyName: LambdaAccess
+          PolicyDocument:
+            Statement:
+              - Effect: 'Allow'
+                Action: 'lambda:*'
+                Resource: !GetAtt SmartHomeManagerDoorInfoController.Arn
                 
   LambdaFunctionRole:
     Type: AWS::IAM::Role
@@ -282,6 +331,17 @@ Resources:
       Code:
         S3Bucket: !Ref S3Bucket
         S3Key: !Ref lightUpdateControllerLambda
+  SmartHomeManagerDoorInfoController:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: TestDoorInfoController
+      Runtime: python3.8
+      Timeout: 5
+      Handler: smartHomeManagerDoorInfoController.lambda_handler
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Code:
+        S3Bucket: !Ref S3Bucket
+        S3Key: !Ref DoorInfoControllerLambda
 
   SmartHomeManagerDynamoDB:
     Type: AWS::DynamoDB::Table
