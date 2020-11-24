@@ -197,13 +197,13 @@
             "UsernameConfiguration" : {
               "CaseSensitive" : "true" 
             },
-            "UserPoolName" : "Smart-Home-Manager-UserPools"
+            "UserPoolName" : "Smart-Home-Manager-UserPool"
           }
       },
       "SmartHomeCognitoUserPoolDomain" : {
         "Type" : "AWS::Cognito::UserPoolDomain",
         "Properties" : {
-            "Domain" : "smart-home-managers",
+            "Domain" : "smart-home-manager",
             "UserPoolId":{
               "Ref":"SmartHomeCognitoUserPool"
             }
@@ -271,10 +271,8 @@
           "KeyName"        : { "Ref" : "KeyName" },
           "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
                          "#!/bin/bash -xe\n",
-                         "yum update -y aws-cfn-bootstrap\n",
-                         "sudo yum install git -y\n",
                          "git clone https://", { "Ref" : "GithubUsername" }, ":", { "Ref" : "GithubPassword" }, 
-                         "@github.com/swen-514-614-fall2020/team-8.git /home/ec2-user/team-8\n",
+                         "@github.com/swen-514-614-fall2020/team-8.git /home/ubuntu/team-8\n",
                          
 
   
