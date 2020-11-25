@@ -30,6 +30,8 @@ def lambda_handler(event, context):
             # responseBody['user_id'] = user_id
     #return response
     responseHeaders['ContentType'] = 'application/json'
+    responseHeaders['Access-Control-Allow-Origin'] = '*'
+    responseHeaders['Access-Control-Allow-Credentials'] = ''
     return {
         'statusCode': responseStatusCode,
         'headers': responseHeaders,
@@ -39,8 +41,8 @@ def lambda_handler(event, context):
 '''
 def get_light_info_all_from_dynamo(userId):
     dynamodb = boto3.resource('dynamodb')
-    tbl = dynamodb.Table('UserDoorDevices')
-    response = tbl.query(KeyConditionExpression=Key('userID').eq(userId))
+    tbl = dynamodb.Table('SmartHomeManagerUserDoors')
+    response = tbl.query(KeyConditionExpression=Key('userId').eq(userId))
     if len(response['Items']) < 1 or not 'DoorSensors' in response['Items'][0]:
         return {}
     door_sensor_dict = {}
@@ -54,8 +56,8 @@ def get_light_info_all_from_dynamo(userId):
 '''
 def get_door_log_from_dynamo(userId,doorId):
     dynamodb = boto3.resource('dynamodb')
-    tbl = dynamodb.Table('UserDoorDevices')
-    response = tbl.query(KeyConditionExpression=Key('userID').eq(userId))
+    tbl = dynamodb.Table('SmartHomeManagerUserDoors')
+    response = tbl.query(KeyConditionExpression=Key('userId').eq(userId))
     if len(response['Items']) < 1 or not 'DoorSensors' in response['Items'][0]:
         return []
     doorSensors = response['Items'][0]['DoorSensors']
@@ -70,7 +72,7 @@ def get_door_log_from_dynamo(userId,doorId):
 '''
 def log_from_dynamo_by_serial(doorSerial):
     dynamodb = boto3.resource('dynamodb')
-    tbl = dynamodb.Table('doorSensorLog')
+    tbl = dynamodb.Table('SmartHomeManagerDoorSensorLog')
     response = tbl.query(KeyConditionExpression=Key('serial').eq(doorSerial))
     doorLog = response['Items']
     logs = []

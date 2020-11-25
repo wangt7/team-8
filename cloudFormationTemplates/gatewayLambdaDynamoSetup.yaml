@@ -152,7 +152,7 @@ Resources:
       HttpMethod: POST
       Integration:
         ConnectionType: INTERNET
-        Credentials: !GetAtt GatewayLightUpdateIamRole.Arn
+        Credentials: !GetAtt GatewayDoorsIamRole.Arn
         IntegrationHttpMethod: POST
         PassthroughBehavior: WHEN_NO_MATCH
         TimeoutInMillis: 29000
@@ -353,6 +353,36 @@ Resources:
       KeySchema: 
         - AttributeName: "userId"
           KeyType: "HASH"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "2"
+        WriteCapacityUnits: "2"
+  SmartHomeManagerDoorsDynamoDB:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: "SmartHomeManagerUserDoors"
+      AttributeDefinitions: 
+        - AttributeName: "userId"
+          AttributeType: "S"
+      KeySchema: 
+        - AttributeName: "userId"
+          KeyType: "HASH"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "2"
+        WriteCapacityUnits: "2"
+  SmartHomeManagerDoorLogDynamoDB:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: "SmartHomeManagerDoorSensorLog"
+      AttributeDefinitions: 
+        - AttributeName: "userId"
+          AttributeType: "S"
+        - AttributeName: "date_time"
+          AttributeType: "S"
+      KeySchema: 
+        - AttributeName: "userId"
+          KeyType: "HASH"
+        - AttributeName: "date_time"
+          KeyType: "RANGE"
       ProvisionedThroughput: 
         ReadCapacityUnits: "2"
         WriteCapacityUnits: "2"
